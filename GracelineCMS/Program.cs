@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -57,12 +59,12 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddSingleton<IAuthorizationHandler, OrganizationAdminRequirementHandler>();
 builder.Services.AddSingleton<IClaimsProvider, ClaimsProvider>(options =>
 {
-    var globalAdminEmail = builder.Configuration.GetValue<string>("GlobalAdminEmail") ?? throw new ArgumentNullException("Missing GlobalAdminEmail in config");
+    var globalAdminEmail = options.GetRequiredService<ConfigurationProvider>().GlobalAdminEmail;
     return new ClaimsProvider(globalAdminEmail);
 });
 builder.Services.AddSingleton<ITokenHandler>(options =>
 {
-    var secret = options.GetRequiredService<IConfiguration>()["AuthenticationSigningSecret"] ?? throw new ArgumentNullException("Missing AuthenticationSigningSecret config");
+    var secret = options.GetRequiredService<ConfigurationProvider>().AuthenticationSigningSecret;
     return new AppTokenHandler(options.GetRequiredService<IClaimsProvider>(), secret, options.GetRequiredService<IDbContextFactory<AppDbContext>>());
 });
 
@@ -91,7 +93,7 @@ builder.Services.AddSingleton<IEmailClient, GmailClient>(sp =>
 builder.Services.AddSingleton<IAuthenticationCodeEmail, AuthenticationCodeEmail>();
 builder.Services.AddSingleton(sp =>
 {
-    var defaultFromAddress = sp.GetRequiredService<IConfiguration>().GetValue<string>("DefaultFromAddress") ?? throw new ArgumentNullException("Missing DefaultFromAddress in config");
+    var defaultFromAddress = sp.GetRequiredService<ConfigurationProvider>().DefaultFromAddress;
     var defaultFromName = sp.GetRequiredService<IConfiguration>().GetValue<string>("DefaultFromName") ?? defaultFromAddress;
     return new EmailCreator(new DefaultEmailAddressConfig
     {
@@ -115,6 +117,7 @@ builder.Services.AddSwaggerGen(c =>
     c.OperationFilter<ProblemDetailsOperationFilter>();
 });
 
+builder.Services.AddSingleton<ConfigurationProvider>();
 builder.Services.AddHealthChecks()
     .AddCheck<ReadinessHealthCheck>("readiness");
 builder.Services.AddCors(config =>
@@ -128,6 +131,7 @@ builder.Services.AddCors(config =>
 
 
 var app = builder.Build();
+app.Services.GetRequiredService<ConfigurationProvider>();
 
 app.UseCors();
 
@@ -159,16 +163,40 @@ app.Run();
 
 public partial class Program { }
 
-public class ReadinessHealthCheck() : IHealthCheck
+public class ConfigurationProvider
 {
-    private volatile bool _isReady = false;
-
-    public Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    private readonly string _authenticationSigningSecret;
+    private readonly string _globalAdminEmail;
+    private readonly string _defaultFromAddress;
+    public ConfigurationProvider(IConfiguration config)
     {
-        _isReady = true;
-        return _isReady ? Task.FromResult(HealthCheckResult.Healthy()) : Task.FromResult(HealthCheckResult.Unhealthy());
+        _authenticationSigningSecret = config.GetValue<string>("AuthenticationSigningSecret") ?? throw new ArgumentNullException("Missing AuthenticationSigningSecret config");
+        _globalAdminEmail = config.GetValue<string>("GlobalAdminEmail") ?? throw new ArgumentNullException("Missing GlobalAdminEmail in config");
+        _defaultFromAddress = config.GetValue<string>("DefaultFromAddress") ?? throw new ArgumentNullException("Missing DefaultFromAddress in config");
     }
+    public string AuthenticationSigningSecret => _authenticationSigningSecret;
+    public string GlobalAdminEmail => _globalAdminEmail;
+    public string DefaultFromAddress => _defaultFromAddress;
+}
 
-    // This method can be called once the app is fully ready (e.g., after migrations)
-    public void SetReady() => _isReady = true;
+#pragma warning disable CS9113 // Parameter is unread.
+public class ReadinessHealthCheck(ConfigurationProvider configProvider, IDbContextFactory<AppDbContext> dbContextFactory) : IHealthCheck
+#pragma warning restore CS9113 // Parameter is unread.
+{
+    //keep config provider as we'll get a better error message if this fails to resolve
+    public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+
+            using (var dbContext = await dbContextFactory.CreateDbContextAsync())
+            {
+                await dbContext.Organizations.Take(1).ToListAsync();//ensure we can query the database
+                return HealthCheckResult.Healthy();
+            }
+        }catch
+        {
+            return HealthCheckResult.Unhealthy();
+        }
+    }
 }

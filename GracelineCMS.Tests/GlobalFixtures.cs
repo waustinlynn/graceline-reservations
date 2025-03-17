@@ -123,6 +123,7 @@ namespace GracelineCMS.Tests
                         services.AddSingleton<IEmailClient, TestEmailClient>();
                     });
                 });
+            webApplicationFactory.Services.GetRequiredService<ConfigurationProvider>();
             Configuration = webApplicationFactory.Services.GetRequiredService<IConfiguration>();
             _dbContextFactory = webApplicationFactory.Services.GetRequiredService<IDbContextFactory<AppDbContext>>();
             _serviceProvider = webApplicationFactory.Services;
