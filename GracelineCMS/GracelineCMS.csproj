@@ -21,4 +21,8 @@
     <ProjectReference Include="..\GracelineCMS.Infrastructure\GracelineCMS.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
 </Project>

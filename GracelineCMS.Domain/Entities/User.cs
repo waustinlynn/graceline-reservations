@@ -12,6 +12,5 @@
         }
         public ICollection<RefreshToken> RefreshTokens { get; set; }
         public ICollection<AuthCode> AuthCodes { get; set; }
-        public ICollection<Organization> Organizations { get; set; } = new List<Organization>();
     }
 }

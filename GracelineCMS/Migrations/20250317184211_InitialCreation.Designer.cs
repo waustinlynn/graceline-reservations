@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GracelineCMS.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250226205202_MapAuthCodesToUser")]
-    partial class MapAuthCodesToUser
+    [Migration("20250317184211_InitialCreation")]
+    partial class InitialCreation
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -100,7 +100,8 @@ namespace GracelineCMS.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmailAddress");
+                    b.HasIndex("EmailAddress")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

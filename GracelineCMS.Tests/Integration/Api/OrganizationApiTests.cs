@@ -57,5 +57,12 @@ namespace GracelineCMS.Tests.Integration.Api
             var response = await GlobalFixtures.PostAsync($"/organization", organizationRequest, accessRefreshToken.AccessToken);
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
+
+        [Test]
+        public async Task ShouldCreateAdminUserGroupWhenCreatingOrganization()
+        {
+            await Task.CompletedTask;
+            Assert.That(true, Is.EqualTo(false));
+        }
     }
 }

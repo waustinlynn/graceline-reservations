@@ -1,6 +1,7 @@
 ﻿using GracelineCMS.Domain.Auth;
 using GracelineCMS.Domain.Communication;
 using GracelineCMS.Domain.Entities;
+using GracelineCMS.Domain.Permissions;
 using GracelineCMS.Infrastructure.Repository;
 using GracelineCMS.Tests.Fakes;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -90,8 +91,15 @@ namespace GracelineCMS.Tests
                 var user = FakeUser.User;
                 var organization = FakeOrganization.Organization;
                 user.EmailAddress = user.EmailAddress.ToLower();
-                organization.Users.Add(user);
                 context.Organizations.Add(organization);
+                context.Users.Add(user);
+                context.Add(new UserGroup
+                {
+                    Name = DefaultUserGroupType.Admin.ToString(),
+                    Organization = organization,
+                    OrganizationId = organization.Id,
+                    User = user
+                });
                 context.SaveChanges();
                 var authToken = GetAuthToken(user.EmailAddress);
                 var headers = new Dictionary<string, string>

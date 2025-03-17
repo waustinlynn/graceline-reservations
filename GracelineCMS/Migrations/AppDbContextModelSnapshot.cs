@@ -47,32 +47,6 @@ namespace GracelineCMS.Migrations
                     b.ToTable("AuthCodes");
                 });
 
-            modelBuilder.Entity("GracelineCMS.Domain.Entities.ContentModule", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("OrganizationId")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrganizationId");
-
-                    b.ToTable("ContentModules");
-                });
-
             modelBuilder.Entity("GracelineCMS.Domain.Entities.Organization", b =>
                 {
                     b.Property<string>("Id")
@@ -129,19 +103,32 @@ namespace GracelineCMS.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("OrganizationUser", b =>
+            modelBuilder.Entity("GracelineCMS.Domain.Entities.UserGroup", b =>
                 {
-                    b.Property<string>("OrganizationsId")
+                    b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("UsersId")
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("OrganizationsId", "UsersId");
+                    b.Property<string>("OrganizationId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.HasIndex("UsersId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("text");
 
-                    b.ToTable("OrganizationUser");
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("Name", "OrganizationId")
+                        .IsUnique();
+
+                    b.ToTable("UserGroups");
                 });
 
             modelBuilder.Entity("GracelineCMS.Domain.Entities.AuthCode", b =>
@@ -153,15 +140,6 @@ namespace GracelineCMS.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("GracelineCMS.Domain.Entities.ContentModule", b =>
-                {
-                    b.HasOne("GracelineCMS.Domain.Entities.Organization", "Organization")
-                        .WithMany("ContentModules")
-                        .HasForeignKey("OrganizationId");
-
-                    b.Navigation("Organization");
-                });
-
             modelBuilder.Entity("GracelineCMS.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("GracelineCMS.Domain.Entities.User", "User")
@@ -171,24 +149,21 @@ namespace GracelineCMS.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("OrganizationUser", b =>
+            modelBuilder.Entity("GracelineCMS.Domain.Entities.UserGroup", b =>
                 {
-                    b.HasOne("GracelineCMS.Domain.Entities.Organization", null)
+                    b.HasOne("GracelineCMS.Domain.Entities.Organization", "Organization")
                         .WithMany()
-                        .HasForeignKey("OrganizationsId")
+                        .HasForeignKey("OrganizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GracelineCMS.Domain.Entities.User", null)
+                    b.HasOne("GracelineCMS.Domain.Entities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
+                        .HasForeignKey("UserId");
 
-            modelBuilder.Entity("GracelineCMS.Domain.Entities.Organization", b =>
-                {
-                    b.Navigation("ContentModules");
+                    b.Navigation("Organization");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("GracelineCMS.Domain.Entities.User", b =>

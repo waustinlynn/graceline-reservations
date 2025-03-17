@@ -9,7 +9,7 @@ namespace GracelineCMS.Infrastructure.Repository
         public DbSet<AuthCode> AuthCodes { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
-        public DbSet<ContentModule> ContentModules { get; set; }
+        public DbSet<UserGroup> UserGroups { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -19,6 +19,10 @@ namespace GracelineCMS.Infrastructure.Repository
             modelBuilder.Entity<User>()
                 .HasIndex(u => u.EmailAddress)
                 .IsUnique();
+
+            modelBuilder.Entity<UserGroup>()
+                .HasIndex(ug => new { ug.Name, ug.OrganizationId })
+                .IsUnique();    
         }
     }
 }

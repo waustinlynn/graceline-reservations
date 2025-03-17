@@ -1,4 +1,5 @@
-﻿using GracelineCMS.Infrastructure.Repository;
+﻿using GracelineCMS.Domain.Permissions;
+using GracelineCMS.Infrastructure.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
@@ -33,10 +34,12 @@ namespace GracelineCMS.Auth
                 return;
             }
 
-            using (var dbContext = await dbContextFactory.CreateDbContextAsync())
+            using(var dbContext = await dbContextFactory.CreateDbContextAsync())
             {
-                var organization = dbContext.Organizations.Where(o => o.Id == organizationId && o.Users.Any(u => u.EmailAddress == userEmail)).FirstOrDefault();
-                if (organization != null)
+                var userGroup = await dbContext
+                    .UserGroups
+                    .FirstOrDefaultAsync(ug => ug.OrganizationId == organizationId && ug.User.EmailAddress == userEmail.ToLower() && ug.Name == DefaultUserGroupType.Admin.ToString());
+                if (userGroup != null)
                 {
                     context.Succeed(requirement);
                     return;
