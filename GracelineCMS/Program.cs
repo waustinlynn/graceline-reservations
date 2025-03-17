@@ -19,6 +19,9 @@ var builder = WebApplication.CreateBuilder(args);
 //config
 builder.Configuration.AddEnvironmentVariables();
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 builder.Services.AddHttpContextAccessor();
 
 //auth

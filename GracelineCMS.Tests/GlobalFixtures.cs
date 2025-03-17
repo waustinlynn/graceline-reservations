@@ -64,7 +64,7 @@ namespace GracelineCMS.Tests
 #pragma warning restore CS8714
         }
 
-        private const string ConnectionString = "Host=localhost;Port=5432;Database=gracelinecms_test;Username=postgres;Password=postgres";
+        private const string ConnectionString = "Host=localhost;Port=5432;Database=gracelinereservations_test;Username=postgres;Password=postgres";
         public static IConfiguration Configuration { get; private set; }
         public static User GetSavedUser(IDbContextFactory<AppDbContext>? dbContextFactory = null)
         {
