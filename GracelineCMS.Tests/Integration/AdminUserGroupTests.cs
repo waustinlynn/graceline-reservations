@@ -4,19 +4,16 @@ using GracelineCMS.Infrastructure.Permissions;
 using GracelineCMS.Tests.Fakes;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GracelineCMS.Tests.Integration
 {
     public class AdminUserGroupTests
     {
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         private IUserGroupService _userGroupService;
         private User _user;
         private Organization _organization;
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         [SetUp]
         public void Setup()
         {
@@ -54,7 +51,7 @@ namespace GracelineCMS.Tests.Integration
                 });
                 await context.SaveChangesAsync();
             }
-            
+
             Assert.ThrowsAsync<DbUpdateException>(async () => await _userGroupService.CreateUserGroup(_user.Id, _organization.Id, DefaultUserGroupType.Admin.ToString()));
         }
 

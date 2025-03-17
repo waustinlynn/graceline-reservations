@@ -1,12 +1,9 @@
-﻿using GracelineCMS.Domain.Auth;
-using GracelineCMS.Domain.Communication;
+﻿using GracelineCMS.Domain.Communication;
 using GracelineCMS.Domain.Entities;
 using GracelineCMS.Infrastructure.Auth;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace GracelineCMS.Tests.Integration.Api
 {
@@ -187,8 +184,8 @@ namespace GracelineCMS.Tests.Integration.Api
             var firstRefreshToken = firstValidationResponse.GetRefreshToken();
 
             var refreshResponse = await GlobalFixtures.GetAsync(
-                $"/token/refresh", 
-                customHeaders: new Dictionary<string, string> 
+                $"/token/refresh",
+                customHeaders: new Dictionary<string, string>
                 {
                     {"Cookie", $"refreshToken={firstRefreshToken}"}
                 }

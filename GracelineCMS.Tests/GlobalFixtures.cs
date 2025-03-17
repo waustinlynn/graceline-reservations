@@ -11,7 +11,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using System.Net;
 
 namespace GracelineCMS.Tests
 {
@@ -224,10 +223,10 @@ public static class HttpResponseExtensionMethods
 {
     public static string GetRefreshToken(this HttpResponseMessage response)
     {
-        if(response.Headers.TryGetValues("Set-Cookie", out var setCookieHeaders))
+        if (response.Headers.TryGetValues("Set-Cookie", out var setCookieHeaders))
         {
             var refreshTokenCookie = setCookieHeaders.FirstOrDefault(h => h.Contains("refreshToken"));
-            if(refreshTokenCookie != null)
+            if (refreshTokenCookie != null)
             {
                 var refreshToken = refreshTokenCookie.Split(";").FirstOrDefault() ?? throw new Exception("Cannot parse refresh token from response");
                 var indexOfEquals = refreshToken?.IndexOf("=") ?? -1;

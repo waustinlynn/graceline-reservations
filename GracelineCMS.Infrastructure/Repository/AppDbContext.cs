@@ -22,7 +22,7 @@ namespace GracelineCMS.Infrastructure.Repository
 
             modelBuilder.Entity<UserGroup>()
                 .HasIndex(ug => new { ug.Name, ug.OrganizationId })
-                .IsUnique();    
+                .IsUnique();
         }
     }
 }

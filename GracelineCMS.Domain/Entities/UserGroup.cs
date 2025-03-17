@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GracelineCMS.Domain.Entities
+﻿namespace GracelineCMS.Domain.Entities
 {
     public class UserGroup
     {

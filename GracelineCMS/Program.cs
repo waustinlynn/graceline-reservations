@@ -8,10 +8,7 @@ using GracelineCMS.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -80,13 +77,13 @@ builder.Services.AddDbContextFactory<AppDbContext>(options =>
 );
 builder.Services.AddSingleton<IEmailClient, GmailClient>(sp =>
 {
-    if(builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development")
+    if (builder.Configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development")
     {
         var credentialFile = builder.Configuration.GetValue<string>("GOOGLE_SMTP_SA_CREDENTIAL") ?? throw new ArgumentNullException("GOOGLE_SMTP_SA_CREDENTIAL");
         var base64Encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(File.ReadAllText(credentialFile)));
         return new GmailClient(base64Encoded);
     }
-    
+
     var encodedCredential = builder.Configuration.GetValue<string>("GOOGLE_SMTP_SA_CREDENTIAL") ?? throw new ArgumentNullException("GOOGLE_SMTP_SA_CREDENTIAL");
     return new GmailClient(encodedCredential);
 });
@@ -194,7 +191,8 @@ public class ReadinessHealthCheck(ConfigurationProvider configProvider, IDbConte
                 await dbContext.Organizations.Take(1).ToListAsync();//ensure we can query the database
                 return HealthCheckResult.Healthy();
             }
-        }catch
+        }
+        catch
         {
             return HealthCheckResult.Unhealthy();
         }

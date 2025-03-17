@@ -29,7 +29,7 @@ namespace GracelineCMS.Controllers
             Response.Cookies.Append("refreshToken", accessRefreshToken.RefreshToken, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true, 
+                Secure = true,
                 SameSite = SameSiteMode.Strict,
                 Expires = DateTime.UtcNow.AddDays(14)
             });

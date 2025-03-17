@@ -34,7 +34,7 @@ namespace GracelineCMS.Auth
                 return;
             }
 
-            using(var dbContext = await dbContextFactory.CreateDbContextAsync())
+            using (var dbContext = await dbContextFactory.CreateDbContextAsync())
             {
                 var userGroup = await dbContext
                     .UserGroups
