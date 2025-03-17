@@ -114,7 +114,8 @@ namespace GracelineCMS.Tests
                             { "ConnectionStrings:DefaultConnection", ConnectionString },
                             { "GOOGLE_SMTP_SA_CREDENTIAL", "FakeCredential" },
                             { "AuthenticationSigningSecret", "abcdefghijklmnopqrstuvwxyz123456789abcmendikekjdjjdkkdklllsjsjsjjkdk" },
-                            { "GlobalAdminEmail", _globalAdminEmail }
+                            { "GlobalAdminEmail", _globalAdminEmail },
+                            { "DefaultFromAddress", "admin@testemail.com" }
                         });
                     });
                     builder.ConfigureTestServices(services =>

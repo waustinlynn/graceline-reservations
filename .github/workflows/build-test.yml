@@ -35,4 +35,4 @@ jobs:
           dotnet-version: 9.0.x
 
       - name: Run Tests
-        run: dotnet test        
+        run: dotnet test --logger "console;verbosity=detailed"
